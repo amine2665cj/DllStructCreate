@@ -1,0 +1,49 @@
+; #FUNCTION# =======================================================================================================================================================
+; Name...........: _Service_StatusToString
+; Description ...: Translates the status codes of Service Query Status into English phrases
+; Syntax.........: _Service_StatusToString(Const ByRef $aServiceStatus)
+; Parameters ....: $aServiceStatus - An array of service status codes, returned by _Service_QueryStatus().
+; Requirement(s).: Constants defined in services.au3
+; Return values .: Success - Returns a string of descriptive lines delimited by CRLF
+;                 Failure - Sets @error, returns English string description of error meaning
+; Author ........: Mike Ratzlaff
+; Modified.......:
+; Remarks .......:
+; Related .......:
+; Link ..........:
+; Example .......:
+; ==================================================================================================================================================================
+Func _Service_StatusToString($aServiceStatus)
+If (Not IsArray($aServiceStatus)) or (UBound($aServiceStatus)<>9) Then
+SetError(1)
+Return "Value passed to _Service_StatusToString was not a ServiceStatusArray"
+EndIf
+
+Local $sOutput=""
+
+$sOutput &= $aServiceStatus[0] & @TAB & "Type of service" & @CRLF
+If $aServiceStatus[0] = $SERVICE_KERNEL_DRIVER Then $sOutput &= @TAB & "The service is a device driver" & @CRLF
+If $aServiceStatus[0] = $SERVICE_FILE_SYSTEM_DRIVER Then $sOutput &= @TAB & "The service is a file system driver" & @CRLF
+If $aServiceStatus[0] = $SERVICE_WIN32_OWN_PROCESS Then $sOutput &= @TAB & "The service runs in its own process" & @CRLF
+If $aServiceStatus[0] = $SERVICE_WIN32_SHARE_PROCESS Then $sOutput &= @TAB & "The service shares a process with other services" & @CRLF
+If $aServiceStatus[0] = BitOR($SERVICE_WIN32_OWN_PROCESS, $SERVICE_INTERACTIVE_PROCESS) Then $sOutput &= @TAB & "The service runs in its own process and can interact with the desktop" & @CRLF
+If $aServiceStatus[0] = BitOR($SERVICE_WIN32_SHARE_PROCESS, $SERVICE_INTERACTIVE_PROCESS) Then $sOutput &= @TAB & "The service shares a process with other services and can interact with the desktop" & @CRLF
+$sOutput &= $aServiceStatus[1] & @TAB & "The current state of the service:" & @CRLF
+If $aServiceStatus[1] = $SERVICE_STOPPED Then $sOutput &= @TAB & "The service has stopped" & @CRLF
+If $aServiceStatus[1] = $SERVICE_START_PENDING Then $sOutput &= @TAB & "The service is starting" & @CRLF
+If $aServiceStatus[1] = $SERVICE_STOP_PENDING Then $sOutput &= @TAB & "The service is stopping" & @CRLF
+If $aServiceStatus[1] = $SERVICE_RUNNING Then $sOutput &= @TAB & "The service is running" & @CRLF
+If $aServiceStatus[1] = $SERVICE_CONTINUE_PENDING Then $sOutput &= @TAB & "The service is about to continue" & @CRLF
+If $aServiceStatus[1] = $SERVICE_PAUSE_PENDING Then $sOutput &= @TAB & "The service is pausing" & @CRLF
+If $aServiceStatus[1] = $SERVICE_PAUSED Then $sOutput &= @TAB & "The service is paused" & @CRLF
+$sOutput &= $aServiceStatus[2] & @TAB & "The control codes the service accepts and processes in its handler function" & @CRLF
+If BitAND($aServiceStatus[2], $SERVICE_ACCEPT_STOP) Then $sOutput &= @TAB & "The service can be stopped" & @CRLF
+If BitAND($aServiceStatus[2], $SERVICE_ACCEPT_PAUSE_CONTINUE) Then $sOutput &= @TAB & "The service can be paused and continued" & @CRLF
+If BitAND($aServiceStatus[2], $SERVICE_ACCEPT_SHUTDOWN) Then $sOutput &= @TAB & "The service is notified when system shutdown occurs" & @CRLF
+If BitAND($aServiceStatus[2], $SERVICE_ACCEPT_PARAMCHANGE) Then $sOutput &= @TAB & "The service can reread its startup parameters without being stopped and restarted" & @CRLF
+If BitAND($aServiceStatus[2], $SERVICE_ACCEPT_NETBINDCHANGE) Then $sOutput &= @TAB & "The service is a network component that can accept changes in its binding without being stopped and restarted" & @CRLF
+If BitAND($aServiceStatus[2], $SERVICE_ACCEPT_HARDWAREPROFILECHANGE) Then $sOutput &= @TAB & "The service is notified when the computer's hardware profile has changed" & @CRLF
+If BitAND($aServiceStatus[2], $SERVICE_ACCEPT_POWEREVENT) Then $sOutput &= @TAB & "The service is notified when the computer's power status has changed" & @CRLF
+If BitAND($aServiceStatus[2], $SERVICE_ACCEPT_SESSIONCHANGE) Then $sOutput &= @TAB & "The service is notified when the computer's session status has changed" & @CRLF
+If BitAND($aServiceStatus[2], $SERVICE_ACCEPT_PRESHUTDOWN) Then $sOutput &= @TAB & "The service can perform preshutdown tasks" & @CRLF
+$sOutput &= $aServiceStatus[3] & @TAB & "The error code that the service uses to report an error that occurs when it is starting or stopping" & @CRLF
